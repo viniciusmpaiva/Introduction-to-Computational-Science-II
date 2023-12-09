@@ -35,49 +35,19 @@ int checkOverlap(const char* str1, const char* str2) {
             j--;
         }
     }
-    // printf("Comparando %s com %s, overlap de %d\n",str1,str2,overlap);
     return overlap;
 }
 
 char* concatOverlap(char* a, char* b, int overlap){
-    // int a_size = strlen(a);
-    // strncpy(s_overlap_string,a,strlen(a)-overlap);
-    // s_overlap_string[a_size - overlap] = '\0';
-    // s_overlap_string = strcat(s_overlap_string,b);
-    // return s_overlap_string; 
-
-    // int a_size = strlen(a);
-    // int b_size = strlen(b);
-
-    // // Copiar 'a' para s_overlap_string
-    // memcpy(s_overlap_string, a, a_size);
-
-    // // Adicionar terminador nulo
-    // s_overlap_string[a_size] = '\0';
-
-    // // Concatenar 'b' a partir da posição de sobreposição
-    // memcpy(s_overlap_string + a_size, b + overlap, b_size - overlap);
-
-    // // Adicionar terminador nulo ao final
-    // s_overlap_string[a_size + b_size - overlap] = '\0';
-
-    // return s_overlap_string;
     int a_size = strlen(a);
     int b_size = strlen(b);
-
-    // Alocar um novo buffer para a concatenação
     char* result = malloc(a_size + b_size - overlap + 1);
 
-    // Copiar 'a' para o novo buffer
-    strncpy(result, a, a_size);
+    strncpy(result,a,strlen(a)-overlap);
+    result[a_size - overlap] = '\0';
+    result = strcat(result,b);
+    return result; 
 
-    // Concatenar 'b' a partir da posição de sobreposição
-    strncpy(result + a_size, b + overlap, b_size - overlap);
-
-    // Adicionar terminador nulo ao final
-    result[a_size + b_size - overlap] = '\0';
-
-    return result;
 }
 
 
@@ -99,6 +69,7 @@ char* recOverlap(char** reads, int N,char s_overlap_string[]){
                     first_overlap = overlap;
                     char* concat_result = concatOverlap(reads[i], reads[u], b_overlap);
                     strcpy(s_overlap_string,concat_result);
+                    free(concat_result);
 
                     final_i = u;
                     final_j = i;
@@ -114,6 +85,7 @@ char* recOverlap(char** reads, int N,char s_overlap_string[]){
                 first_overlap = overlap;
                 char* concat_result = concatOverlap(reads[i], reads[j], b_overlap);
                 strcpy(s_overlap_string,concat_result);
+                free(concat_result);
                 final_i = i;
                 final_j = j;
             }
@@ -126,7 +98,7 @@ char* recOverlap(char** reads, int N,char s_overlap_string[]){
     char** newreads = createArray(N);
     
     strcpy(newreads[0],s_overlap_string);
-    // memmove(newreads[0], s_overlap_string, strlen(newreads[0]) + 1);
+    
 
     int j=0;
     for(int i=1; i<N;i++){
@@ -134,7 +106,7 @@ char* recOverlap(char** reads, int N,char s_overlap_string[]){
             j++;
         }
         strcpy(newreads[i],reads[j]);
-        // memmove(newreads[i], reads[j], strlen(newreads[i]) + 1);
+        
         j++;
     }
     recOverlap(newreads,N,s_overlap_string); 
@@ -149,7 +121,7 @@ int main(){
     for(int i = 0; i<N;i++){
         scanf("%s",reads[i]);
     }
-    char s_overlap_string[1000000];
+    char s_overlap_string[1000];
     char*res = recOverlap(reads, N,s_overlap_string);
     printf("%s\n",res);
     for (int i = 0; i < N; i++) {
